@@ -45,7 +45,7 @@
 ## 技术栈
 
 - 后端：Flask + SQLAlchemy
-- 前端：Svelte + Vite
+- 前端：Svelte + Vite + Tailwind CSS
 - 数据库：PostgreSQL
 
 ## 主要 API

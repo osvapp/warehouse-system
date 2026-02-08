@@ -125,13 +125,23 @@
   })
 </script>
 
-<main>
-  <h1>仓储管理系统（Flask + Svelte + PostgreSQL）</h1>
+<main class="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-6 py-8">
+  <header class="rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-500 p-6 text-white shadow-lg">
+    <p class="text-sm text-blue-100">Warehouse System</p>
+    <h1 class="mt-2 text-2xl font-semibold">仓储管理系统（Flask + Svelte + PostgreSQL）</h1>
+    <p class="mt-1 text-sm text-blue-100">全流程业务协同面板</p>
+  </header>
 
   <NavTabs {routes} {activePath} navigate={currentPath.navigate} />
 
   {#if activeKey === 'auth'}
-    <AuthPage auth={auth} token={token} authError={authError} onRegister={() => doAuth('register')} onLogin={() => doAuth('login')} />
+    <AuthPage
+      auth={auth}
+      token={token}
+      authError={authError}
+      onRegister={() => doAuth('register')}
+      onLogin={() => doAuth('login')}
+    />
   {:else}
     <ModulePage
       title={modules[activeKey].title}
@@ -144,81 +154,3 @@
     />
   {/if}
 </main>
-
-<style>
-  :global(body) {
-    margin: 0;
-    font-family: system-ui, sans-serif;
-    background: #f3f4f6;
-  }
-
-  :global(main) {
-    max-width: 1200px;
-    margin: 1.5rem auto;
-    padding: 0 1rem;
-  }
-
-  :global(.card) {
-    background: #fff;
-    border-radius: 12px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  }
-
-  :global(.tabs) {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  :global(button) {
-    border: 0;
-    border-radius: 8px;
-    padding: 0.45rem 0.7rem;
-    background: #2563eb;
-    color: #fff;
-    cursor: pointer;
-  }
-
-  :global(button.active) {
-    background: #1d4ed8;
-  }
-
-  :global(input) {
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
-    padding: 0.45rem 0.65rem;
-  }
-
-  :global(.row),
-  :global(.grid) {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  :global(.grid) {
-    margin-bottom: 0.75rem;
-  }
-
-  :global(.error) {
-    color: #dc2626;
-    font-weight: 600;
-  }
-
-  :global(.ok) {
-    color: #047857;
-    font-weight: 600;
-  }
-
-  :global(pre) {
-    background: #111827;
-    color: #f9fafb;
-    border-radius: 8px;
-    padding: 0.8rem;
-    overflow: auto;
-    font-size: 0.8rem;
-  }
-</style>
