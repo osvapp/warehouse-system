@@ -17,6 +17,31 @@
 - 权限管理
 - 登录与注册
 
+## 前端页面与路由
+
+前端采用 hash 路由，核心页面与路径如下：
+
+- `#/auth`：登录与注册
+- `#/inventory`：库存管理
+- `#/warehouse`：仓库管理
+- `#/staff`：库员管理
+- `#/supplier`：供应商管理
+- `#/customer`：客户管理
+- `#/inbound`：入库管理
+- `#/outbound`：出库管理
+- `#/alerts`：库存预警
+- `#/bill`：账单管理
+- `#/employee`：员工管理
+- `#/role`：角色管理
+- `#/permission`：权限管理
+
+组件结构：
+
+- `frontend/src/components/NavTabs.svelte`：路由导航
+- `frontend/src/components/AuthPage.svelte`：认证页面组件
+- `frontend/src/components/ModulePage.svelte`：通用业务页面组件
+- `frontend/src/router.js`：路由定义与导航逻辑
+
 ## 技术栈
 
 - 后端：Flask + SQLAlchemy
