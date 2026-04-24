@@ -1,5 +1,3 @@
-import { writable } from 'svelte/store'
-
 export const routes = [
   { path: '/auth', key: 'auth', label: '登录与注册' },
   { path: '/inventory', key: 'inventory', label: '库存管理' },
@@ -16,37 +14,4 @@ export const routes = [
   { path: '/permission', key: 'permission', label: '权限管理' }
 ]
 
-const defaultPath = '/auth'
-
-function getPathFromHash() {
-  const hash = window.location.hash || ''
-  const path = hash.replace(/^#/, '')
-  return routes.some((route) => route.path === path) ? path : defaultPath
-}
-
-function createRouter() {
-  const store = writable(defaultPath)
-
-  function syncFromHash() {
-    store.set(getPathFromHash())
-  }
-
-  function navigate(path) {
-    if (!routes.some((route) => route.path === path)) return
-    if (window.location.hash !== `#${path}`) {
-      window.location.hash = path
-    } else {
-      store.set(path)
-    }
-  }
-
-  window.addEventListener('hashchange', syncFromHash)
-  syncFromHash()
-
-  return {
-    subscribe: store.subscribe,
-    navigate
-  }
-}
-
-export const currentPath = createRouter()
+export const defaultRoute = '/auth'

@@ -40,7 +40,10 @@
 - `frontend/src/components/NavTabs.svelte`：路由导航
 - `frontend/src/components/AuthPage.svelte`：认证页面组件
 - `frontend/src/components/ModulePage.svelte`：通用业务页面组件
-- `frontend/src/router.js`：路由定义与导航逻辑
+- `frontend/src/config/routes.js`：路由定义
+- `frontend/src/config/modules.js`：业务模块配置
+- `frontend/src/services/api.js`：统一 API 请求封装
+- `frontend/src/stores/router.js`：路由状态管理
 
 ## 技术栈
 

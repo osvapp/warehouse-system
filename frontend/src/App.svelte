@@ -4,7 +4,10 @@
   import AuthPage from './components/AuthPage.svelte'
   import ModulePage from './components/ModulePage.svelte'
   import NavTabs from './components/NavTabs.svelte'
-  import { currentPath, routes } from './router'
+  import { modules, numericFields } from './config/modules'
+  import { routes } from './config/routes'
+  import { postJson, getJson } from './services/api'
+  import { currentPath } from './stores/router'
 
   let activePath = '/auth'
   const routeByPath = Object.fromEntries(routes.map((route) => [route.path, route]))
@@ -14,24 +17,7 @@
   let authError = ''
   let pageError = ''
 
-  const modules = {
-    inventory: { endpoint: '/api/items', title: '库存管理', form: { sku: '', name: '', quantity: 0, min_stock: 0, location: '' } },
-    warehouse: { endpoint: '/api/warehouses', title: '仓库管理', form: { code: '', name: '', location: '' } },
-    staff: { endpoint: '/api/warehouse-staff', title: '库员管理', form: { name: '', phone: '', warehouse_id: '' } },
-    supplier: { endpoint: '/api/suppliers', title: '供应商管理', form: { name: '', contact: '', phone: '' } },
-    customer: { endpoint: '/api/customers', title: '客户管理', form: { name: '', contact: '', phone: '' } },
-    inbound: { endpoint: '/api/inbound-orders', title: '入库管理', form: { item_id: '', supplier_id: '', quantity: 0, note: '' } },
-    outbound: { endpoint: '/api/outbound-orders', title: '出库管理', form: { item_id: '', customer_id: '', quantity: 0, note: '' } },
-    alerts: { endpoint: '/api/alerts', title: '库存预警', form: {} },
-    bill: { endpoint: '/api/bills', title: '账单管理', form: { bill_no: '', bill_type: 'receivable', amount: 0 } },
-    employee: { endpoint: '/api/employees', title: '员工管理', form: { name: '', email: '', position: '' } },
-    role: { endpoint: '/api/roles', title: '角色管理', form: { code: '', name: '', permission_ids: '' } },
-    permission: { endpoint: '/api/permissions', title: '权限管理', form: { code: '', name: '' } }
-  }
-
   const lists = Object.fromEntries(Object.keys(modules).map((key) => [key, []]))
-
-  const toNumberFields = ['quantity', 'min_stock', 'item_id', 'supplier_id', 'customer_id', 'warehouse_id', 'amount']
 
   $: activeKey = routeByPath[activePath]?.key || 'auth'
 
@@ -45,25 +31,18 @@
 
   async function doAuth(path) {
     authError = ''
-    const res = await fetch(`/api/auth/${path}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(auth)
-    })
-    const body = await res.json()
-    if (!res.ok) {
-      authError = body.error || `${path} failed`
-      return
+    try {
+      const body = await postJson(`/api/auth/${path}`, auth)
+      if (body.token) token = body.token
+    } catch (error) {
+      authError = error.message
     }
-    if (body.token) token = body.token
   }
 
   async function fetchModule(key) {
     pageError = ''
     try {
-      const res = await fetch(modules[key].endpoint)
-      if (!res.ok) throw new Error(`加载 ${modules[key].title} 失败`)
-      lists[key] = await res.json()
+      lists[key] = await getJson(modules[key].endpoint)
     } catch (error) {
       pageError = error.message
     }
@@ -80,20 +59,14 @@
         .filter((id) => Number.isInteger(id) && id > 0)
     }
 
-    toNumberFields.forEach((field) => {
+    numericFields.forEach((field) => {
       if (payload[field] !== undefined && payload[field] !== '') {
         payload[field] = Number(payload[field])
       }
     })
 
     try {
-      const res = await fetch(modules[key].endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      const body = await res.json().catch(() => ({}))
-      if (!res.ok) throw new Error(body.error || '创建失败')
+      await postJson(modules[key].endpoint, payload)
       await fetchModule(key)
     } catch (error) {
       pageError = error.message
@@ -101,15 +74,15 @@
   }
 
   async function generateAlerts() {
-    await fetch('/api/alerts/generate', { method: 'POST' })
+    await postJson('/api/alerts/generate', {})
     await fetchModule('alerts')
   }
 
   async function generateBill() {
-    await fetch('/api/bills/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ source: 'outbound', reference_id: 1, amount: 99.9 })
+    await postJson('/api/bills/generate', {
+      source: 'outbound',
+      reference_id: 1,
+      amount: 99.9
     })
     await fetchModule('bill')
   }
